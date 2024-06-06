@@ -8,7 +8,7 @@ import {AppContainer} from '../styles/styles';
 
 function App() {
     const [title, setTitle] = useState('');
-    const status = useAppSelector(state => state.todos.status)
+    // const status = useAppSelector(state => state.todos.status)
     const error = useAppSelector(state => state.todos.error)
     const loading = useAppSelector(state => state.todos.loading)
 
