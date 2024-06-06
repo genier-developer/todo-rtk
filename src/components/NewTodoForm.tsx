@@ -1,5 +1,6 @@
 import Button from '@mui/material/Button';
 import {InputContainer, StyledTextField} from "../styles/styles";
+import {FC} from "react";
 
 interface NewTodoFormProps {
     value: string,
@@ -7,7 +8,7 @@ interface NewTodoFormProps {
     handleAction: () => void,
 }
 
-export const NewTodoForm: React.FC<NewTodoFormProps> = ({ value, updateText, handleAction }) => {
+export const NewTodoForm: FC<NewTodoFormProps> = ({ updateText, handleAction }) => {
     return (
         <InputContainer>
             <StyledTextField id="outlined-basic"
