@@ -1,5 +1,9 @@
 import { useAppDispatch } from '../app/hooks';
-import { toggleComplete, removeTodo } from '../features/todoSlice';
+import {deleteTodo, toggleStatus} from '../features/todoSlice';
+import Checkbox from '@mui/material/Checkbox';
+import DeleteIcon from '@mui/icons-material/Delete';
+import {DeleteIconContainer, TodoItems} from "../styles/styles";
+
 
 interface TodoItemProps {
     id: string,
@@ -11,14 +15,15 @@ export const TodoItem: React.FC<TodoItemProps> = ({ id, title, completed }) => {
     const dispatch = useAppDispatch();
 
     return (
-        <li>
-            <input
-                type='checkbox'
-                checked={completed}
-                onChange={() => dispatch(toggleComplete(id))}
-            />
+        <TodoItems>
+            <Checkbox  checked={completed}
+                       onChange={() => dispatch(toggleStatus(id))}/>
+
             <span>{title}</span>
-            <span onClick={() => dispatch(removeTodo(id))}>X</span>
-        </li>
+
+            <DeleteIconContainer onClick={() => dispatch(deleteTodo(id))}>
+                <DeleteIcon/>
+            </DeleteIconContainer>
+        </TodoItems>
     );
 };
