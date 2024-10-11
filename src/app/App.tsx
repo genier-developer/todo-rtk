@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import {useEffect, useState} from 'react';
 import {addNewTodo, fetchTodos, setFilter} from '../features/todoSlice';
 import {useAppDispatch, useAppSelector} from "./hooks";
 import {TodoList} from "../components/TodoList";
@@ -9,15 +9,17 @@ import Button from "@mui/material/Button";
 
 function App() {
     const [title, setTitle] = useState('');
-    const status = useAppSelector(state => state.todos.status)
     const error = useAppSelector(state => state.todos.error)
     const loading = useAppSelector(state => state.todos.loading)
+    const todos = useAppSelector(state => state.todos.todos);
 
     const dispatch = useAppDispatch()
 
     useEffect(() => {
         dispatch(fetchTodos())
     }, [dispatch]);
+
+    const activeTodoCount = todos.filter(todo => !todo.completed).length;
 
     const handleAction = () => {
         if (title.trim() !== '') {
@@ -48,9 +50,25 @@ function App() {
             {error && <h2>Error occurred: {error}</h2>}
             <TodoList/>
             <div>
-                <Button variant="contained" sx={{margin: 2}} onClick={handleAll}>All</Button>
-                <Button variant="contained" sx={{margin: 2}} onClick={handleActive}>Active</Button>
-                <Button variant="contained" sx={{margin: 2}} onClick={handleCompleted}>Completed</Button>
+                <p>{activeTodoCount} items left</p>
+                <Button variant="contained"
+                        sx={{margin: 2}}
+                        color={'primary'}
+                        onClick={handleAll}>
+                    All
+                </Button>
+                <Button variant="contained"
+                        sx={{margin: 2}}
+                        color={'success'}
+                        onClick={handleActive}>
+                    Active
+                </Button>
+                <Button variant="contained"
+                        sx={{margin: 2}}
+                        color={'warning'}
+                        onClick={handleCompleted}>
+                    Completed
+                </Button>
             </div>
         </AppContainer>
     );

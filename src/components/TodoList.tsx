@@ -1,6 +1,4 @@
 import {useAppDispatch, useAppSelector} from '../app/hooks';
-import {TodoItem} from './TodoItem';
-import {TodoLists} from '../styles/styles'
 import {toggleStatus} from "../features/todoSlice";
 
 export const TodoList = () => {
@@ -12,10 +10,11 @@ export const TodoList = () => {
         if (filter === 'all') return true;
         if (filter === 'active') return !todo.completed;
         if (filter === 'completed') return todo.completed;
+        return false;
     });
 
     const handleToggle = (id: string) => {
-        dispatch(toggleStatus(id));  // Вызываем экшен для смены статуса задачи
+        dispatch(toggleStatus(id));
     };
 
     return (
@@ -27,7 +26,9 @@ export const TodoList = () => {
                         checked={todo.completed}
                         onChange={() => handleToggle(todo.id)}
                     />
-                    {todo.title}
+                    <span style={{ textDecoration: todo.completed ? 'line-through' : 'none' }}>
+                        {todo.title}
+                    </span>
                 </li>
             ))}
         </ul>
