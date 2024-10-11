@@ -12,15 +12,19 @@ export type TodosType = {
     todos: TodoType[],
     status: null | string,
     error: null | string,
-    loading: boolean
+    loading: boolean,
+    filter: 'all' | 'active' | 'completed'
 }
 
 export const initialState: TodosType = {
     todos: [],
     status: null,
     error: null,
-    loading: false
+    loading: false,
+    filter: 'all'
 }
+
+
 export const fetchTodos = createAsyncThunk<TodoType[], undefined, { rejectValue: string }>(
     'todos/fetchTodos',
     async (_, {rejectWithValue}) => {
@@ -107,49 +111,46 @@ const todoSlice = createSlice({
     name: 'todos',
     initialState,
     reducers: {
+        setFilter(state, action: PayloadAction<'all' | 'active' | 'completed'>) {
+            state.filter = action.payload;
+        }
     },
-    extraReducers:
-        (builder) => {
-            builder
-                .addCase(fetchTodos.rejected, setError)
-                .addCase(fetchTodos.pending, (state) => {
-                    state.loading = true
-                    state.status = 'pending'
-                    state.error = null
-                })
-                .addCase(fetchTodos.fulfilled, (state, action) => {
-                    state.status = 'fulfilled'
-                    state.todos = action.payload
-                    state.loading = false
-                })
-                .addCase(deleteTodo.fulfilled, (state, action) => {
-                    state.status = 'fulfilled'
-                    state.todos = state.todos.filter(todo => todo.id !== action.payload);
-                    state.error = null
-                })
-                .addCase(addNewTodo.fulfilled, (state, action) => {
-                    state.status = 'fulfilled'
-                    state.todos.unshift(action.payload)
-
-                })
-                .addCase(toggleStatus.fulfilled, (state, action) => {
-
-                    // const a = current(state)
-                    const toggledTodo =
-                        state.todos.find(todo => {
-
-                            return todo.id === action.payload.id
-                        })
-                    if (toggledTodo) {
-                        toggledTodo.completed = !toggledTodo.completed
-                    }
-                })
-                .addMatcher(isError, (state, action: PayloadAction<string>) => {
-                    state.error = action.payload
-                    state.loading = false
-                })
-        },
+    extraReducers: (builder) => {
+        builder
+            .addCase(fetchTodos.rejected, setError)
+            .addCase(fetchTodos.pending, (state) => {
+                state.loading = true
+                state.status = 'pending'
+                state.error = null
+            })
+            .addCase(fetchTodos.fulfilled, (state, action) => {
+                state.status = 'fulfilled'
+                state.todos = action.payload
+                state.loading = false
+            })
+            .addCase(deleteTodo.fulfilled, (state, action) => {
+                state.status = 'fulfilled'
+                state.todos = state.todos.filter(todo => todo.id !== action.payload);
+                state.error = null
+            })
+            .addCase(addNewTodo.fulfilled, (state, action) => {
+                state.status = 'fulfilled'
+                state.todos.unshift(action.payload)
+            })
+            .addCase(toggleStatus.fulfilled, (state, action) => {
+                const toggledTodo = state.todos.find(todo => todo.id === action.payload.id)
+                if (toggledTodo) {
+                    toggledTodo.completed = !toggledTodo.completed
+                }
+            })
+            .addMatcher(isError, (state, action: PayloadAction<string>) => {
+                state.error = action.payload
+                state.loading = false
+            })
+    },
 });
+
+export const { setFilter } = todoSlice.actions;
 
 const isError = (action: AnyAction) => {
     return action.type.endsWith('rejected')

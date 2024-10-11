@@ -1,4 +1,3 @@
-
 import styled from 'styled-components';
 import { TextField} from '@mui/material';
 
@@ -7,7 +6,7 @@ export const AppContainer = styled.div`
   flex-direction: column;
   align-items: center;
   padding: 20px;
-  background-color: #f0f0f0;
+    background-color: white;
   font-size: 1.2rem;
   
 `;
