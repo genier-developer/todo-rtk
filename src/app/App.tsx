@@ -1,10 +1,11 @@
 import {useEffect, useState} from 'react';
-import {addNewTodo, fetchTodos, setFilter} from '../features/todoSlice';
+import {addNewTodo, fetchTodos, setFilter} from '../features/todo-slice';
 import {useAppDispatch, useAppSelector} from "./hooks";
-import {TodoList} from "../components/TodoList";
-import {NewTodoForm} from "../components/NewTodoForm";
-import {AppContainer} from '../styles/styles';
+import {TodoList} from "../components/todo-list";
+import {TodoForm} from "../components/todo-form";
 import Button from "@mui/material/Button";
+import {AppBar, Box, IconButton, Toolbar, Typography} from "@mui/material";
+import AddTaskIcon from '@mui/icons-material/AddTask';
 
 
 function App() {
@@ -49,8 +50,25 @@ function App() {
     };
 
     return (
-        <AppContainer>
-            <NewTodoForm
+        <Box>
+            <AppBar position="static">
+                <Toolbar>
+                    <IconButton
+                      size="large"
+                      edge="start"
+                      color="inherit"
+                      aria-label="menu"
+                      sx={{ mr: 2 }}
+                    >
+                        <AddTaskIcon />
+                    </IconButton>
+                    <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                        Task Planner
+                    </Typography>
+                    <Button color="inherit">Login</Button>
+                </Toolbar>
+            </AppBar>
+            <TodoForm
                 value={todo}
                 updateText={setTodo}
                 handleAction={handleAction}
@@ -79,7 +97,7 @@ function App() {
                     Completed
                 </Button>
             </div>
-        </AppContainer>
+        </Box>
     );
 }
 
