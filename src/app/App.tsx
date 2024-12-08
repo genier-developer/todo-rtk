@@ -8,10 +8,11 @@ import Button from "@mui/material/Button";
 
 
 function App() {
-    const [title, setTitle] = useState('');
+    const [todo, setTodo] = useState('');
     const error = useAppSelector(state => state.todos.error)
     const loading = useAppSelector(state => state.todos.loading)
     const todos = useAppSelector(state => state.todos.todos);
+    const filter = useAppSelector(state => state.todos.filter);
 
     const dispatch = useAppDispatch()
 
@@ -21,12 +22,20 @@ function App() {
 
     const activeTodoCount = todos.filter(todo => !todo.completed).length;
 
+    const filteredTodos = todos.filter(todo => {
+        if (filter === 'all') return true;
+        if (filter === 'active') return !todo.completed;
+        if (filter === 'completed') return todo.completed;
+        return false;
+    });
+
     const handleAction = () => {
-        if (title.trim() !== '') {
-            dispatch(addNewTodo(title));
+        if (todo.trim() !== '') {
+            dispatch(addNewTodo(todo));
         }
-        setTitle('');
-    }
+        setTodo('');
+    };
+
     const handleAll = () => {
         dispatch(setFilter('all'));
     };
@@ -42,13 +51,13 @@ function App() {
     return (
         <AppContainer>
             <NewTodoForm
-                value={title}
-                updateText={setTitle}
+                value={todo}
+                updateText={setTodo}
                 handleAction={handleAction}
             />
             {loading && <h2>Loading...</h2>}
             {error && <h2>Error occurred: {error}</h2>}
-            <TodoList/>
+            <TodoList todos={filteredTodos} />
             <div>
                 <p>{activeTodoCount} items left</p>
                 <Button variant="contained"

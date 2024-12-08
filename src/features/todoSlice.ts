@@ -1,19 +1,20 @@
 import {AnyAction, createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import type {PayloadAction} from '@reduxjs/toolkit';
-import {v1} from 'uuid'
+
 
 
 export type TodoType = {
     id: string,
     title: string,
-    completed: boolean
+    completed: boolean,
+    userId: number,
 }
 export type TodosType = {
     todos: TodoType[],
     status: null | string,
     error: null | string,
     loading: boolean,
-    filter: 'all' | 'active' | 'completed'
+    filter: 'all' | 'completed' | 'active',
 }
 
 export const initialState: TodosType = {
@@ -26,20 +27,27 @@ export const initialState: TodosType = {
 
 
 export const fetchTodos = createAsyncThunk<TodoType[], undefined, { rejectValue: string }>(
-    'todos/fetchTodos',
-    async (_, {rejectWithValue}) => {
-        const response = await fetch('https://jsonplaceholder.typicode.com/todos?&_limit=10')
-        if (!response.ok) {
-            return rejectWithValue('Server error')
-        }
-        return await response.json()
+  'todos/fetchTodos',
+  async (_, { rejectWithValue }) => {
+    const response = await fetch('https://dummyjson.com/todos?limit=10');
+    if (!response.ok) {
+      return rejectWithValue('Server error');
     }
-)
+    const data = await response.json();
+    return data.todos.map((todo: any) => ({
+      id: todo.id.toString(),
+      title: todo.todo,
+      completed: todo.completed,
+      userId: todo.userId,
+    }));
+  }
+);
+
 
 export const deleteTodo = createAsyncThunk<string, string, { rejectValue: string }>(
     'todos/deleteTodo',
     async function (id, {rejectWithValue}) {
-        const response = await fetch(`https://jsonplaceholder.typicode.com/todos/${id}`, {
+        const response = await fetch(`https://dummyjson.com/todos/${id}`, {
             method: 'DELETE',
         })
 
@@ -57,7 +65,7 @@ export const toggleStatus = createAsyncThunk<TodoType, string, { rejectValue: st
         const todo = getState().todos.todos.find(todo => todo.id === id);
 
         if (todo) {
-            const response = await fetch(`https://jsonplaceholder.typicode.com/todos/${id}`, {
+            const response = await fetch(`https://dummyjson.com/todos/${id}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -80,28 +88,29 @@ export const toggleStatus = createAsyncThunk<TodoType, string, { rejectValue: st
 );
 
 export const addNewTodo = createAsyncThunk<TodoType, string, { rejectValue: string }>(
-    'todos/addNewTodo',
-    async function (title, {rejectWithValue}) {
-        const todo = {
-            title: title,
-            id: v1(),
-            completed: false,
-        };
+  'todos/addNewTodo',
+  async (title, { rejectWithValue }) => {
+    const response = await fetch('https://dummyjson.com/todos/add', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        todo: title,
+        completed: false,
+        userId: 1,
+      }),
+    });
 
-        const response = await fetch('https://jsonplaceholder.typicode.com/todos', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(todo)
-        });
-
-        if (!response.ok) {
-            return rejectWithValue('Can\'t add task. Server error.');
-        }
-        return (await response.json()) as TodoType;
+    if (!response.ok) {
+      return rejectWithValue("Can't add task. Server error.");
     }
+
+    return await response.json();
+  }
 );
+
+
 const setError = (state: any) => {
     state.status = 'rejected'
     state.error = "error"
@@ -111,7 +120,7 @@ const todoSlice = createSlice({
     name: 'todos',
     initialState,
     reducers: {
-        setFilter(state, action: PayloadAction<'all' | 'active' | 'completed'>) {
+        setFilter(state, action: PayloadAction<'all' | 'completed' | 'active'>) {
             state.filter = action.payload;
         }
     },
