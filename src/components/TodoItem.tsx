@@ -3,6 +3,7 @@ import {deleteTodo, toggleStatus} from '../features/todoSlice';
 import Checkbox from '@mui/material/Checkbox';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {DeleteIconContainer, TodoItems} from "../styles/styles";
+import {FC} from "react";
 
 
 interface TodoItemProps {
@@ -11,7 +12,7 @@ interface TodoItemProps {
     completed: boolean,
 }
 
-export const TodoItem: React.FC<TodoItemProps> = ({ id, title, completed }) => {
+export const TodoItem: FC<TodoItemProps> = ({ id, title, completed }) => {
     const dispatch = useAppDispatch();
 
     return (
